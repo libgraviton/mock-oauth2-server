@@ -11,7 +11,7 @@ data class Configuration(
 ) {
     data class Server(
         val hostname: InetAddress = "SERVER_HOSTNAME".fromEnv()?.let { InetAddress.getByName(it) } ?: InetSocketAddress(0).address,
-        val port: Int = "SERVER_PORT".fromEnv()?.toInt() ?: 8888
+        val port: Int = "SERVER_PORT".fromEnv()?.toInt() ?: 8080
     )
 }
 

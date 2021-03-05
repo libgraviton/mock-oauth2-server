@@ -151,7 +151,7 @@ tasks.javadoc {
 
 jib {
     from {
-        image = "gcr.io/distroless/java:11"
+        image = "gcr.io/distroless/java:11-nonroot"
     }
     container {
         ports = listOf("8080")

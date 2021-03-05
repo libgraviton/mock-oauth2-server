@@ -7,10 +7,10 @@ node {
     }
 
     stage('Checkout & Bump') {
-        sh './gradlew jibDockerBuild --image="grv/mock-auth2-server:develop"'
+        sh './gradlew jibDockerBuild --image="grv/mock-oauth2-server:develop"'
 
         grvDockerBuild.dockerBuild() {
-            image = docker.image('grv/mock-auth2-server:develop')
+            image = docker.image('grv/mock-oauth2-server:develop')
             image.push('develop')
         }
     }
