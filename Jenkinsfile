@@ -7,10 +7,11 @@ node {
     }
 
     stage('Checkout & Bump') {
-        sh './gradlew jibDockerBuild --image="mock-auth2-server:develop" --debug'
+        sh './gradlew jibDockerBuild --image="grv/mock-auth2-server:develop"'
 
-        grvDockerBuild(isJava: '13', addedArgs: '--group-add 998 -v /var/run/docker.sock:/var/run/docker.sock') {
-            sh 'whoami'
+        grvDockerBuild.dockerBuild() {
+            image = docker.image('grv/mock-auth2-server:develop')
+            image.push('develop')
         }
     }
 
