@@ -1,5 +1,7 @@
 package no.nav.security.mock.oauth2.token
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.nimbusds.jose.JOSEObjectType
 import com.nimbusds.jose.JWSAlgorithm
 import com.nimbusds.jose.JWSHeader
@@ -18,6 +20,7 @@ import java.time.Instant
 import java.util.Date
 import java.util.UUID
 import no.nav.security.mock.oauth2.extensions.clientIdAsString
+import no.nav.security.mock.oauth2.fromEnv
 import okhttp3.HttpUrl
 
 class OAuth2TokenProvider {
@@ -39,6 +42,7 @@ class OAuth2TokenProvider {
             oAuth2TokenCallback.subject(tokenRequest),
             listOf(tokenRequest.clientIdAsString()),
             nonce,
+            null,
             oAuth2TokenCallback.addClaims(tokenRequest),
             oAuth2TokenCallback.tokenExpiry()
         )
@@ -48,13 +52,15 @@ class OAuth2TokenProvider {
         tokenRequest: TokenRequest,
         issuerUrl: HttpUrl,
         oAuth2TokenCallback: OAuth2TokenCallback,
-        nonce: String? = null
+        nonce: String? = null,
+        username: String? = null
     ) = createSignedJWT(
         defaultClaims(
             issuerUrl,
             oAuth2TokenCallback.subject(tokenRequest),
             oAuth2TokenCallback.audience(tokenRequest),
             nonce,
+            username,
             oAuth2TokenCallback.addClaims(tokenRequest),
             oAuth2TokenCallback.tokenExpiry()
         )
@@ -93,6 +99,7 @@ class OAuth2TokenProvider {
         subject: String,
         audience: List<String>,
         nonce: String?,
+        username: String?,
         additionalClaims: Map<String, Any>,
         expiry: Long
     ) = JWTClaimsSet.Builder().let { builder ->
@@ -106,6 +113,13 @@ class OAuth2TokenProvider {
             .jwtID(UUID.randomUUID().toString())
 
         nonce?.also { builder.claim("nonce", it) }
+
+        username?.also {
+            val tenant: String = "TENANT".fromEnv()?.toString() ?: "0000"
+            val fcsClaim = mapOf("userbank" to tenant, "user" to username)
+            builder.claim("fcs", fcsClaim)
+            builder.claim("preferred_username", username)
+        }
 
         additionalClaims.forEach { builder.claim(it.key, it.value) }
         builder.build()

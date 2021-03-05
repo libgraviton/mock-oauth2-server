@@ -45,14 +45,6 @@ data class WellKnown(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-data class OAuth2TokenResponseFcs(
-    @JsonProperty("userbank")
-    val userbank: String? = null,
-    @JsonProperty("user")
-    val user: String? = null
-)
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
 data class OAuth2TokenResponse(
     @JsonProperty("token_type")
     val tokenType: String,
@@ -68,8 +60,6 @@ data class OAuth2TokenResponse(
     val expiresIn: Int = 0,
     @JsonProperty("scope")
     val scope: String? = null,
-    @JsonProperty("fcs")
-    var fcs: OAuth2TokenResponseFcs? = null,
     @JsonProperty("preferred_username")
     var preferredUsername: String? = null,
 )
